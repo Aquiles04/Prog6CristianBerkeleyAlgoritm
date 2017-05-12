@@ -27,9 +27,9 @@ public class T {
 
             System.out.println("Digite minha id");
             String id = sc.nextLine();
-            System.out.println("Digite minha id");
-            Date date = sc.nex
-            Cliente cliente = new Cliente(sc.nextInt())
+            //System.out.println("Digite minha id");
+            Date date = new Date();
+            Cliente cliente = new Cliente(sc.nextInt(),date);
             
             Socket t = new Socket("paulo", 12345);
             ObjectInputStream entrada = new ObjectInputStream(t.getInputStream());
