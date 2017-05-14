@@ -5,58 +5,87 @@
  */
 package prog6cristianberkeleyalgoritm;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Date;
-import java.util.Scanner;
-import javax.swing.JOptionPane;
+import java.io.InputStreamReader;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 /**
  *
- * @author alexandre.chaves
+ * @author Usuario
  */
 public class T {
 
     public static void main(String[] args) throws InterruptedException, IOException {
 
-        try {
-       	    Scanner sc = new Scanner(System.in); 
+        byte[] sendData = new byte[1024];
+        byte[] receiveData = new byte[1024];
 
-            System.out.println("Digite minha id");
-            String id = sc.nextLine();
-            System.out.println("Digite a hora formato hh");
-            Date date = new Date();
-            date.setHours(sc.nextInt());
-            System.out.println("Digite a hora formato mm");
-            date.setMinutes(sc.nextInt());
-            
-            Cliente cliente = new Cliente(sc.nextInt(),date);
-            
-            Socket t = new Socket("localhost", 12345);
-            ObjectInputStream entrada = new ObjectInputStream(t.getInputStream());
-            ObjectOutputStream saida = new ObjectOutputStream(t.getOutputStream());
-            
-            //saida.flush();
-            saida.writeChars("Que horas sao?");
+        BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
+        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
-            Date data_TimeServer = (Date) entrada.readObject();
-            
-            Date data_T1 = new Date();
-            
-            Long resultado = (data_T1.getTime() - cliente.getTempoAgora().getTime() - data_TimeServer.getTime())/2;
+        MulticastSocket mSocket = new MulticastSocket(3333);
+        String group = "224.0.0.1";
 
-            System.out.println("Hora correta " + Long.toString(resultado));
-            //JOptionPane.showMessageDialog(null, "Data recebida do servidor:" + data_atual.toString());
-            entrada.close();
-            saida.close();
-            System.out.println("Conexão encerrada");
-            
-        } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
+        mSocket.joinGroup(InetAddress.getByName(group));
+
+        mSocket.receive(receivePacket);
+
+        String mensagemCoordenador = new String(receivePacket.getData());
+        String tempoCoor[] = mensagemCoordenador.split(":");
+        int horaCoordenador = Integer.parseInt(tempoCoor[0]);
+        int minutoCoordenador = Integer.parseInt(tempoCoor[1]);
+
+        String tempoEscravo[] = this.tempoAgora.split(":");
+        int horaEscravo = Integer.parseInt(tempoEscravo[0]);
+        int minutoEscravo = Integer.parseInt(tempoEscravo[1]);
+
+        int horaRes = 0;
+        int minRes = 0;
+
+        System.out.println(
+                new String(receivePacket.getData(), receivePacket.getOffset(),
+                        receivePacket.getLength()));
+
+        if (horaCoordenador <= horaEscravo) {
+            horaRes = horaEscravo - horaCoordenador;
         }
-    }
 
+        if (minutoCoordenador <= minutoEscravo) {
+            minRes = minutoEscravo - minutoCoordenador;
+        }
+
+        if (horaCoordenador >= horaEscravo) {
+            horaRes = horaCoordenador - horaEscravo;
+        }
+
+        if (minutoCoordenador >= minutoEscravo) {
+            minRes = minutoCoordenador - minutoEscravo;
+        }
+
+        String tempoRes = "" + horaRes + ":" + minRes;
+
+        sendData = tempoRes.getBytes();
+
+        //DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 7777);
+
+        //clientSocket.send(sendPacket);
+        //System.out.println("FROM SERVER:" + modifiedSentence);
+
+//        byte[] sendData = new byte[1024];
+//        byte[] receiveData = new byte[1024];
+//        BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
+//        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+//        MulticastSocket mSocket = new MulticastSocket(3333);
+//        String group = "224.0.0.1";		
+//        mSocket.joinGroup(InetAddress.getByName(group));
+//
+//		
+//        mSocket.receive(receivePacket);
+//        System.out.println(new String(receivePacket.getData(), receivePacket.getOffset(),    
+//        receivePacket.getLength()));
+//		
+    }
 }

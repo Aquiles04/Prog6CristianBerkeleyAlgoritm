@@ -147,8 +147,8 @@ public class Escravo extends Thread {
             
             sendData = tempoRes.getBytes();
             
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 7777);
-            clientSocket.send(sendPacket);
+            //DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 7777);
+            //clientSocket.send(sendPacket);
             //System.out.println("FROM SERVER:" + modifiedSentence);
             
             

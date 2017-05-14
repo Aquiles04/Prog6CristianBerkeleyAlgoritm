@@ -6,75 +6,76 @@
 package prog6cristianberkeleyalgoritm;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Date;
-import java.util.Random;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 /**
  *
- * @author alexandre.chaves
+ * @author Usuario
  */
 public class TimeServer {
 
     public static void main(String[] args) throws InterruptedException, IOException {
+        // TODO code application logic here
 
-        try {
-            // Instancia o ServerSocket ouvindo a porta 12345
-            ServerSocket servidorSocket = new ServerSocket(12345);
-            System.out.println("Servidor ouvindo a porta 12345");
+        //Scanner sc = new Scanner(System.in);
+        InetAddress endereco = InetAddress.getByName("localhost");
+        int portaCoordenador = 7777;
 
-            
-            int count = 0;
-            
-            while (true) {
+        Coordenador coordenador = new Coordenador(endereco, portaCoordenador);
+        coordenador.getSocket().setSoTimeout(10000);
 
-                //Date date = new Date();
-                //server.setTempoAgora(date);
-                // o método accept() bloqueia a execução até que
-                // o servidor receba um pedido de conexão
-                System.out.println("Esperando Conexao");
-                Socket cliente = servidorSocket.accept();
-                
+        //System.out.println("Informe mensagem que será enviada para grupo");
+        //coordenador.setMensagem(sc.nextLine());
+        //coordenador.setMensagem(coordenador.getMensagem() + Integer.toString(coordenador.getPorta()));
+        //Date tempoCoordenador = coordenador.gettempoAgora();
+        //coordenador.setMensagem(tempoCoordenador);
+        //System.out.println("Mensagem sera: "+ coordenador.getMensagem() );
+        MulticastSocket remSocket = new MulticastSocket();
+        String group = "224.0.0.1";
+        int portaGrupo = 3333;
 
-                Date date = new Date();
-                //Cliente serverObj = new Cliente(count, date);
-                
-                System.out.println("Cliente conectado: " + cliente.getInetAddress().getHostAddress());
-                
-                ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
-                ObjectOutputStream saida = new ObjectOutputStream(cliente.getOutputStream());
-                //saida.flush();
-                
-                
-                System.out.println(entrada.readChar());
-                System.out.println(date);
-                
-                Random rand = new Random();
-                //this.hora = rand.nextInt(23);
-                //this.minuto = rand.nextInt(59);
-                servidorSocket.setSoTimeout(rand.nextInt(30));
-                saida.writeObject(date);
-                                
-                //Cliente dataT0 = (Cliente) entrada.readObject();  
-                //Long resultado = serverObj.getTempoAgora().getTime() - dataT0.getTempoAgora().getTime();
-                
-                //Date dateFinal = new Date(resultado);
-                        
-                //JOptionPane.showMessageDialog(null, "Data recebida do servidor:" + data_atual.toString());
-//                saida.writeObject(new Date());
+        byte[] send1;
+        //byte[] send2;
+        coordenador.setMensagem("Que horas sao?");
+        send1 = coordenador.getMensagem().getBytes();
+        //send2 = Integer.toString(coordenador.getPorta()).getBytes();
 
-                entrada.close();
-                saida.close();
-                cliente.close();
+        DatagramPacket saida = new DatagramPacket(send1, send1.length, InetAddress.getByName(group), portaGrupo);
+        //DatagramPacket pacote2 = new DatagramPacket(send2, send2.length, InetAddress.getByName(group), portaGrupo);
 
-                count = count + 1;
+        remSocket.send(saida);
+        //remSocket.send(pacote2);
+
+        int count = 0;
+
+        byte[] receiveData = new byte[1024];
+
+        DatagramPacket entrada = new DatagramPacket(receiveData, receiveData.length);
+
+        Thread.sleep(5000);
+
+        while (true) {
+
+            coordenador.getSocket().receive(entrada);
+
+            String msg = new String(entrada.getData(), entrada.getOffset(),
+                    entrada.getLength());
+
+            System.out.println("Recebida: " + msg);
+
+            //socket.close();
+            count++;
+            if (count == 10) {
+
+                break;
+
             }
-        } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
+
         }
+        remSocket.close();
+
     }
 
 }

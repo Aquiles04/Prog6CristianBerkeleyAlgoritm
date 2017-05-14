@@ -16,10 +16,10 @@ public class Cliente {
     
     
      private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
-     private int id;
+     private String id;
      private Date tempoAgora;
 
-    public Cliente(int id, Date tempoAgora) {
+    public Cliente(String id, Date tempoAgora) {
         this.id = id;
         this.tempoAgora = tempoAgora;
     }
@@ -34,11 +34,11 @@ public class Cliente {
     
     
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
