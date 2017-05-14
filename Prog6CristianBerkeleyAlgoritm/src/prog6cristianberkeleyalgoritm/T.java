@@ -27,16 +27,33 @@ public class T {
 
             System.out.println("Digite minha id");
             String id = sc.nextLine();
-            //System.out.println("Digite minha id");
+            System.out.println("Digite a hora formato hh");
             Date date = new Date();
+            date.setHours(sc.nextInt());
+            System.out.println("Digite a hora formato mm");
+            date.setMinutes(sc.nextInt());
+            
             Cliente cliente = new Cliente(sc.nextInt(),date);
             
-            Socket t = new Socket("paulo", 12345);
+            Socket t = new Socket("localhost", 12345);
             ObjectInputStream entrada = new ObjectInputStream(t.getInputStream());
-            Date data_atual = (Date) entrada.readObject();
-            JOptionPane.showMessageDialog(null, "Data recebida do servidor:" + data_atual.toString());
+            ObjectOutputStream saida = new ObjectOutputStream(t.getOutputStream());
+            
+            //saida.flush();
+            saida.writeChars("Que horas sao?");
+
+            Date data_TimeServer = (Date) entrada.readObject();
+            
+            Date data_T1 = new Date();
+            
+            Long resultado = (data_T1.getTime() - cliente.getTempoAgora().getTime() - data_TimeServer.getTime())/2;
+
+            System.out.println("Hora correta " + Long.toString(resultado));
+            //JOptionPane.showMessageDialog(null, "Data recebida do servidor:" + data_atual.toString());
             entrada.close();
+            saida.close();
             System.out.println("Conexão encerrada");
+            
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
         }

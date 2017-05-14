@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
+import java.util.Random;
 
 /**
  *
@@ -25,31 +26,47 @@ public class TimeServer {
             ServerSocket servidorSocket = new ServerSocket(12345);
             System.out.println("Servidor ouvindo a porta 12345");
 
-            Date date = new Date();
-            Cliente serverObj = new Cliente(0, date);
+            
             int count = 0;
+            
             while (true) {
 
                 //Date date = new Date();
                 //server.setTempoAgora(date);
                 // o método accept() bloqueia a execução até que
                 // o servidor receba um pedido de conexão
+                System.out.println("Esperando Conexao");
                 Socket cliente = servidorSocket.accept();
+                
 
+                Date date = new Date();
+                //Cliente serverObj = new Cliente(count, date);
+                
                 System.out.println("Cliente conectado: " + cliente.getInetAddress().getHostAddress());
                 
                 ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
                 ObjectOutputStream saida = new ObjectOutputStream(cliente.getOutputStream());
-                saida.flush();
+                //saida.flush();
                 
-                Cliente dataT0 = (Cliente) entrada.readObject();  
-                Long resultado = serverObj.getTempoAgora().getTime() - dataT0.getTempoAgora().getTime();
                 
-                Date dateFinal = new Date(resultado);
+                System.out.println(entrada.readChar());
+                System.out.println(date);
+                
+                Random rand = new Random();
+                //this.hora = rand.nextInt(23);
+                //this.minuto = rand.nextInt(59);
+                servidorSocket.setSoTimeout(rand.nextInt(30));
+                saida.writeObject(date);
+                                
+                //Cliente dataT0 = (Cliente) entrada.readObject();  
+                //Long resultado = serverObj.getTempoAgora().getTime() - dataT0.getTempoAgora().getTime();
+                
+                //Date dateFinal = new Date(resultado);
                         
-                JOptionPane.showMessageDialog(null, "Data recebida do servidor:" + data_atual.toString());
+                //JOptionPane.showMessageDialog(null, "Data recebida do servidor:" + data_atual.toString());
+//                saida.writeObject(new Date());
+
                 entrada.close();
-                saida.writeObject(new Date());
                 saida.close();
                 cliente.close();
 
